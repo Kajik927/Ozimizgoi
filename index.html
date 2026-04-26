@@ -92,6 +92,15 @@
     /* burger */
     .burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
     .burger span { display: block; width: 26px; height: 2px; background: var(--white); transition: all .3s; }
+    .nav-close {
+      display: none;
+      position: absolute; top: 20px; right: 20px;
+      background: none; border: 2px solid rgba(255,255,255,.3);
+      color: var(--white); font-size: 1.2rem; width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer; align-items: center; justify-content: center;
+      transition: border-color .3s, background .3s;
+    }
+    .nav-close:hover { background: rgba(255,255,255,.1); border-color: var(--gold); }
 
     /* ── HERO ─────────────────────────────────────────────── */
     #hero {
@@ -912,6 +921,7 @@
 <nav id="navbar">
   <a href="#" class="logo"><img src="photo/Логотип-removebg-preview.png" alt="ÖzimizGOi — Химчистка мягкой мебели" /></a>
   <ul class="nav-links" id="navLinks">
+    <button class="nav-close" onclick="closeMenu()" aria-label="Закрыть меню">&#10005;</button>
     <li><a href="#services" onclick="closeMenu()">Услуги</a></li>
     <li><a href="#why" onclick="closeMenu()">О нас</a></li>
     <li><a href="#how" onclick="closeMenu()">Как работаем</a></li>

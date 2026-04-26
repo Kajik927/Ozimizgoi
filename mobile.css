@@ -15,6 +15,7 @@
     gap: 32px; font-size: 1.1rem; z-index: 99;
   }
   .nav-links.open { display: flex; }
+  .nav-links.open .nav-close { display: flex; }
   .nav-cta { display: none; }
 
   /* Hero */
