@@ -3,6 +3,12 @@
    Брейкпоинты: 900px (планшет), 640px (телефон), 420px (малый экран)
 ═══════════════════════════════════════════════════════════ */
 
+/* ── PROMO BAR — mobile overrides ──────────────────────── */
+@media (max-width: 640px) {
+  body.promo-active nav { top: 44px !important; }
+  body.promo-active .hero-inner { padding-top: 140px !important; }
+}
+
 /* ── TABLET (≤ 900px) ───────────────────────────────────── */
 @media (max-width: 900px) {
   /* Nav */

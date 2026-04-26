@@ -101,6 +101,45 @@
     }
     .nav-close:hover { background: rgba(255,255,255,.1); border-color: var(--gold); }
 
+    /* ── PROMO BAR ──────────────────────────────────────────── */
+    #promo-bar {
+      position: fixed; top: 0; left: 0; width: 100%; height: 44px; z-index: 101;
+      background: linear-gradient(90deg, var(--navy-mid) 0%, #0d2050 50%, var(--navy-mid) 100%);
+      border-bottom: 1px solid rgba(77,159,255,.22);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 48px 0 16px; gap: 12px;
+      transition: transform .4s ease, opacity .4s ease;
+    }
+    #promo-bar.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+    .promo-text {
+      color: var(--white); font-size: .82rem; font-weight: 500;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+    .promo-accent { color: var(--gold); font-weight: 700; }
+    .promo-timer {
+      display: inline-flex; align-items: center;
+      background: rgba(77,159,255,.15); border: 1px solid rgba(77,159,255,.3);
+      border-radius: 4px; padding: 2px 8px; font-size: .78rem; color: var(--gold-light);
+      font-variant-numeric: tabular-nums; letter-spacing: .04em; white-space: nowrap;
+    }
+    .promo-cta {
+      background: var(--gold); color: var(--navy);
+      border: none; padding: 5px 14px; border-radius: 4px;
+      font-size: .76rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+      transition: background .2s, transform .2s; letter-spacing: .04em;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .promo-cta:hover { background: var(--gold-light); transform: scale(1.03); }
+    .promo-close {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,.4);
+      font-size: .9rem; cursor: pointer; padding: 4px; line-height: 1;
+      transition: color .2s;
+    }
+    .promo-close:hover { color: var(--white); }
+    body.promo-active nav { top: 44px !important; }
+    body.promo-active .hero-inner { padding-top: 134px; }
+
     /* ── HERO ─────────────────────────────────────────────── */
     #hero {
       min-height: 100vh;
@@ -890,11 +929,28 @@
       .hero-stats { display: none !important; }
       .hero-btns { flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
       .btn-primary, .btn-ghost { width: 100%; text-align: center; padding: 15px 24px; }
+      body.promo-active .hero-inner { padding-top: 140px !important; }
+    }
+    @media (max-width: 480px) {
+      #promo-bar { gap: 8px; padding: 0 40px 0 10px; }
+      .promo-text { font-size: .74rem; gap: 6px; }
+      .promo-cta { padding: 4px 10px; font-size: .72rem; }
+      .promo-timer { font-size: .72rem; padding: 2px 6px; }
     }
   </style>
-  <link rel="stylesheet" href="mobile.css?v=5" />
+  <link rel="stylesheet" href="mobile.css?v=6" />
 </head>
 <body>
+
+<!-- Promo bar -->
+<div id="promo-bar">
+  <div class="promo-text">
+    <span>🔥 Акция: <span class="promo-accent">−15% на первый заказ!</span></span>
+    <span>Осталось: <span class="promo-timer" id="promo-timer">--ч --м --с</span></span>
+  </div>
+  <button class="promo-cta" onclick="openPromoPopup()">Получить скидку</button>
+  <button class="promo-close" onclick="closePromoBar()" aria-label="Закрыть">✕</button>
+</div>
 
 <!-- SVG icon library -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
@@ -1536,8 +1592,9 @@
 <div class="popup-overlay" id="popup">
   <div class="popup-card">
     <button class="popup-close" onclick="closePopup()">✕</button>
-    <div class="popup-title">Оставить заявку</div>
-    <p class="popup-sub">Заполните форму или напишите нам напрямую</p>
+    <div style="display:inline-block;background:rgba(77,159,255,.15);border:1px solid rgba(77,159,255,.35);color:var(--gold-light);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 14px;border-radius:100px;margin-bottom:12px;">🎉 Специальное предложение</div>
+    <div class="popup-title">Скидка 15% на первый заказ!</div>
+    <p class="popup-sub">Оставьте заявку прямо сейчас — мы сделаем скидку 15% на вашу первую чистку</p>
 
     <form class="popup-form" onsubmit="handlePopupForm(event)">
       <div class="popup-form-row">
@@ -1626,7 +1683,44 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => revealObserver.observe(el));
 
-  // ── Popup (появляется через 5 сек)
+  // ── Promo bar
+  function openPromoPopup() {
+    document.getElementById('popup').classList.add('active');
+  }
+  function closePromoBar() {
+    document.getElementById('promo-bar').classList.add('hidden');
+    document.body.classList.remove('promo-active');
+    sessionStorage.setItem('promoBarClosed', '1');
+  }
+  // Countdown timer — 24h from first visit, persisted in localStorage
+  (function() {
+    let promoEnd = localStorage.getItem('promoEnd');
+    if (!promoEnd || parseInt(promoEnd) < Date.now()) {
+      promoEnd = Date.now() + 24 * 3600 * 1000;
+      localStorage.setItem('promoEnd', promoEnd);
+    }
+    promoEnd = parseInt(promoEnd);
+    function tick() {
+      const rem = promoEnd - Date.now();
+      const el = document.getElementById('promo-timer');
+      if (!el) return;
+      if (rem <= 0) { el.textContent = '00ч 00м 00с'; return; }
+      const h = Math.floor(rem / 3600000);
+      const m = Math.floor((rem % 3600000) / 60000);
+      const s = Math.floor((rem % 60000) / 1000);
+      el.textContent = String(h).padStart(2,'0') + 'ч ' + String(m).padStart(2,'0') + 'м ' + String(s).padStart(2,'0') + 'с';
+    }
+    setInterval(tick, 1000);
+    tick();
+  })();
+  // Init promo bar state
+  if (sessionStorage.getItem('promoBarClosed') === '1') {
+    document.getElementById('promo-bar').classList.add('hidden');
+  } else {
+    document.body.classList.add('promo-active');
+  }
+
+  // ── Popup (появляется через 8 сек)
   function closePopup() {
     document.getElementById('popup').classList.remove('active');
   }
@@ -1640,7 +1734,7 @@
   }
   setTimeout(() => {
     document.getElementById('popup').classList.add('active');
-  }, 5000);
+  }, 8000);
   document.getElementById('popup').addEventListener('click', function(e) {
     if (e.target === this) closePopup();
   });
