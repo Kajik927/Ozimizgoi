@@ -561,8 +561,8 @@
     /* ── CONTACT ─────────────────────────────────────────── */
     #contact { background: var(--white); }
     .contact-inner {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 80px; align-items: start;
+      display: flex; flex-direction: column;
+      max-width: 620px; margin: 0 auto;
     }
     .contact-info { }
     .contact-item {
@@ -595,6 +595,74 @@
       border-color: var(--gold); box-shadow: 0 0 0 3px rgba(77,159,255,.1);
     }
     .form-group textarea { resize: vertical; min-height: 100px; }
+
+    /* ── POPUP ───────────────────────────────────────────── */
+    .popup-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(11,26,56,.80); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .4s ease;
+    }
+    .popup-overlay.active { opacity: 1; pointer-events: all; }
+    .popup-card {
+      background: var(--navy);
+      border: 1px solid rgba(77,159,255,.25);
+      border-radius: 20px;
+      padding: 48px 40px 36px;
+      max-width: 420px; width: 100%;
+      position: relative;
+      transform: translateY(28px) scale(.97);
+      transition: transform .4s ease;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,.6);
+    }
+    .popup-overlay.active .popup-card { transform: translateY(0) scale(1); }
+    .popup-close {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.7); width: 34px; height: 34px;
+      border-radius: 50%; cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s, color .3s;
+    }
+    .popup-close:hover { background: rgba(255,255,255,.18); color: #fff; }
+    .popup-logo {
+      width: 70px; height: 70px; border-radius: 14px;
+      background: #fff; object-fit: contain; padding: 6px;
+      margin: 0 auto 20px; display: block;
+    }
+    .popup-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem; font-weight: 700; color: var(--white);
+      margin-bottom: 10px; line-height: 1.2;
+    }
+    .popup-sub {
+      font-size: .9rem; color: var(--text-dim);
+      margin-bottom: 32px; line-height: 1.6;
+    }
+    .popup-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 15px 24px; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform .2s, box-shadow .2s;
+      margin-bottom: 12px; letter-spacing: .02em;
+    }
+    .popup-btn:last-of-type { margin-bottom: 0; }
+    .popup-btn:hover { transform: translateY(-2px); }
+    .popup-btn-wa { background: #25D366; color: #fff; box-shadow: 0 6px 20px rgba(37,211,102,.4); }
+    .popup-btn-wa:hover { box-shadow: 0 10px 28px rgba(37,211,102,.55); }
+    .popup-btn-ig { background: linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7); color: #fff; box-shadow: 0 6px 20px rgba(238,42,123,.35); }
+    .popup-btn-ig:hover { box-shadow: 0 10px 28px rgba(238,42,123,.5); }
+    .popup-skip {
+      display: block; margin-top: 20px;
+      font-size: .82rem; color: var(--text-dim); cursor: pointer;
+      background: none; border: none; width: 100%;
+      transition: color .3s;
+    }
+    .popup-skip:hover { color: var(--white); }
 
     /* whatsapp btn */
     .wa-float {
@@ -1367,34 +1435,6 @@
         </div>
       </div>
     </div>
-    <div class="contact-form reveal">
-      <form onsubmit="handleForm(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Ваше имя</label>
-            <input type="text" placeholder="Айгерим" required />
-          </div>
-          <div class="form-group">
-            <label>Телефон</label>
-            <input type="tel" placeholder="+7 (___) ___-__-__" required />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Услуга</label>
-          <select>
-            <option>Химчистка дивана</option>
-            <option>Чистка ковров</option>
-            <option>Чистка матраса</option>
-            <option>Несколько услуг</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Адрес / комментарий</label>
-          <textarea placeholder="Ваш адрес и любые пожелания..."></textarea>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%;text-align:center;">Отправить заявку</button>
-      </form>
-    </div>
   </div>
 </section>
 
@@ -1447,6 +1487,25 @@
   </svg>
 </a>
 
+<!-- ═══════════════ POPUP ═══════════════ -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-card">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <img class="popup-logo" src="photo/Логотип-removebg-preview.png" alt="ÖzimizGOi" />
+    <div class="popup-title">Свяжитесь с нами</div>
+    <p class="popup-sub">Напишите в WhatsApp или следите за нами в Instagram — ответим быстро!</p>
+    <a href="https://wa.me/77066872793" class="popup-btn popup-btn-wa" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Написать в WhatsApp
+    </a>
+    <a href="#" class="popup-btn popup-btn-ig" target="_blank" id="popupIgLink">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="24" height="24" rx="7"/><circle cx="16" cy="16" r="6"/><circle cx="23" cy="9" r="1.4" fill="currentColor" stroke="none"/></svg>
+      Подписаться в Instagram
+    </a>
+    <button class="popup-skip" onclick="closePopup()">Закрыть</button>
+  </div>
+</div>
+
 <!-- notification toast -->
 <div class="notif" id="notif">✦ Заявка отправлена! Перезвоним в течение 15 минут.</div>
 
@@ -1490,14 +1549,16 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => revealObserver.observe(el));
 
-  // ── Form submit
-  function handleForm(e) {
-    e.preventDefault();
-    const notif = document.getElementById('notif');
-    notif.classList.add('show');
-    setTimeout(() => notif.classList.remove('show'), 4000);
-    e.target.reset();
+  // ── Popup (появляется через 5 сек)
+  function closePopup() {
+    document.getElementById('popup').classList.remove('active');
   }
+  setTimeout(() => {
+    document.getElementById('popup').classList.add('active');
+  }, 5000);
+  document.getElementById('popup').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
+  });
 
   // ── Hero title animation on load
   document.addEventListener('DOMContentLoaded', () => {
