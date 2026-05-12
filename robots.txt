@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kajik927.github.io/Ozimizgoi/sitemap.xml
